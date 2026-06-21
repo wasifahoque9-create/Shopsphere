@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> — AuthKit</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="dashboard-body">
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="7" fill="#4f46e5"/>
+        <path d="M15 7l9 5v6l-9 5-9-5v-6l9-5z" stroke="white" stroke-width="1.5" fill="none"/>
+        <circle cx="15" cy="15" r="3.5" fill="white"/>
+      </svg>
+      AuthKit
+    </div>
+    <div class="nav-user">
+      <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <span class="nav-name"><%= user.name %></span>
+      <form action="/logout" method="POST" style="margin:0">
+        <button type="submit" class="btn-logout">Sign out</button>
+      </form>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+    <div class="dashboard-container">
+
+      <div class="welcome-card">
+        <h1>Welcome, <%= user.name.split(' ')[0] %>! 👋</h1>
+        <p>You are signed in successfully. Your session is active.</p>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <p class="info-label">Full Name</p>
+          <p class="info-value"><%= user.name %></p>
+        </div>
+        <div class="info-card">
+          <p class="info-label">Email</p>
+          <p class="info-value"><%= user.email %></p>
+        </div>
+        <div class="info-card">
+          <p class="info-label">User ID</p>
+          <p class="info-value">#<%= user.id.toString().padStart(4, '0') %></p>
+        </div>
+        <div class="info-card">
+          <p class="info-label">Status</p>
+          <p class="info-value" style="color:#16a34a;">Active</p>
+        </div>
+      </div>
+
+      <div class="stack-card">
+        <h3>Tech Stack</h3>
+        <div class="stack-list">
+          <span class="stack-item">Node.js</span>
+          <span class="stack-item">Express.js</span>
+          <span class="stack-item">EJS</span>
+          <span class="stack-item">lowdb (JSON)</span>
+          <span class="stack-item">bcryptjs</span>
+          <span class="stack-item">express-session</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

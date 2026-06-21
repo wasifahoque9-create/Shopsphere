@@ -1,0 +1,61 @@
+<%- include('layout-top') %>
+
+    <div class="admin-header">
+      <div>
+        <h1>Add New User</h1>
+        <p class="admin-subtitle">Create a new user or admin account.</p>
+      </div>
+      <a href="/admin/users" class="btn-outline">← Back to Users</a>
+    </div>
+
+    <div class="form-section">
+      <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-error">⚠ <%= errors[0].msg %></div>
+      <% } %>
+
+      <form action="/admin/users/add" method="POST" class="auth-form" novalidate>
+
+        <div class="field-group">
+          <label for="name">Full name</label>
+          <div class="input-wrap">
+            <input type="text" id="name" name="name"
+              placeholder="Enter full name"
+              value="<%= old.name || '' %>" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="email">Email address</label>
+          <div class="input-wrap">
+            <input type="email" id="email" name="email"
+              placeholder="user@example.com"
+              value="<%= old.email || '' %>" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" name="password"
+              placeholder="Minimum 6 characters" required />
+            <button type="button" class="toggle-pw" onclick="togglePassword('password', this)">
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><ellipse cx="9" cy="9" rx="7" ry="4.5" stroke="currentColor" stroke-width="1.4"/><circle cx="9" cy="9" r="2" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="role">Role</label>
+          <select id="role" name="role" class="select-input">
+            <option value="user"  <%= (old.role === 'user'  || !old.role) ? 'selected' : '' %>>User — regular account</option>
+            <option value="admin" <%= (old.role === 'admin') ? 'selected' : '' %>>Admin — full panel access</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary">Create User</button>
+      </form>
+    </div>
+
+  </div>
+</body>
+</html>

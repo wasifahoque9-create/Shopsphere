@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@admin.com",
+      "password": "$2a$10$hJ8fd/dmWvec2nZIre8RCuM1IKo1QYpyPxFOj0nxrpQCRxT/ltwQ.",
+      "role": "admin",
+      "created_at": "2026-06-21T16:37:35.371Z"
+    },
+    {
+      "id": 2,
+      "name": "sakib",
+      "email": "sakib@gmail.com",
+      "password": "$2a$10$rbjuqti8yO2Bd9PIJ3kg/OEGzOjSkCrdZDQw16Fq5sYG9MQhN2CWi",
+      "role": "admin",
+      "created_at": "2026-06-21T16:42:36.594Z"
+    },
+    {
+      "id": 4,
+      "name": "Sreejita Chowdhury",
+      "email": "sreejita360@gmail.com",
+      "password": "$2a$10$5DcZwiY/ItaVXALW/jpG/uHz4qTJUYbB4A2fBw8kXctMRkUkxf.a6",
+      "role": "user",
+      "created_at": "2026-06-21T18:36:36.766Z"
+    }
+  ]
+}

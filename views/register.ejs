@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> — AuthKit</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="auth-card">
+
+    <div class="auth-logo">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="7"/>
+        <path d="M15 7l9 5v6l-9 5-9-5v-6l9-5z" stroke="white" stroke-width="1.5" fill="none"/>
+        <circle cx="15" cy="15" r="3.5" fill="white"/>
+      </svg>
+      <span class="auth-logo-name">AuthKit</span>
+    </div>
+
+    <div class="auth-header">
+      <h2>Create an account</h2>
+      <p>Fill in the details below to get started</p>
+    </div>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="alert alert-error">⚠ <%= errors[0].msg %></div>
+    <% } %>
+
+    <form action="/register" method="POST" class="auth-form" novalidate>
+
+      <div class="field-group">
+        <label for="name">Full name</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Your full name"
+            value="<%= old.name || '' %>"
+            required
+            autocomplete="name"
+          />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@example.com"
+            value="<%= old.email || '' %>"
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Minimum 6 characters"
+            required
+            autocomplete="new-password"
+          />
+          <button type="button" class="toggle-pw" onclick="togglePassword('password', this)" title="Show">
+            <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><ellipse cx="9" cy="9" rx="7" ry="4.5" stroke="currentColor" stroke-width="1.4"/><circle cx="9" cy="9" r="2" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <p class="strength-label" id="strengthLabel"></p>
+      </div>
+
+      <div class="field-group">
+        <label for="password_confirm">Confirm password</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password_confirm"
+            name="password_confirm"
+            placeholder="Repeat your password"
+            required
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">Create account</button>
+    </form>
+
+    <hr class="divider" />
+
+    <p class="form-footer">
+      Already have an account? <a href="/login">Sign in</a>
+    </p>
+
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
