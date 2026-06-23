@@ -1,18 +1,11 @@
-import "bootstrap/dist/css/bootstrap.css";
+import Navbar from "../components/navbar";
 import "./globals.css";
-import BootstrapClient from "./BootstrapClient";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <BootstrapClient />
-
-
+        <Navbar />
         {children}
       </body>
     </html>
