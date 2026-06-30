@@ -9,8 +9,6 @@ import { PageLoader } from "@/components/ui/Spinner";
 import { catalogApi } from "@/lib/api";
 import type { Category } from "@/types";
 
-
-
 const categoryIcons: Record<string, string> = {
   laptop: "💻",
   laptops: "💻",
@@ -30,6 +28,10 @@ const categoryIcons: Record<string, string> = {
   smartwatch: "⌚",
   tablet: "📟",
   camera: "📷",
+};
+
+type CategoryWithImage = Category & {
+  image_url?: string | null;
 };
 
 type PromoImageProps = {
@@ -159,9 +161,7 @@ export default function HomePage() {
 
               <h1 className="max-w-lg text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
                 Upgrade Your World With{" "}
-                <span className="text-[#F59E0B]">
-                  Smarter Gadgets
-                </span>
+                <span className="text-[#F59E0B]">Smarter Gadgets</span>
               </h1>
 
               <p className="mt-5 max-w-md text-sm leading-7 text-white/80 sm:text-base">
@@ -189,7 +189,7 @@ export default function HomePage() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                   href="/products/iphone"
+                  href="/products/iphone"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F59E0B] px-6 py-3 text-sm font-bold text-white shadow-lg transition duration-300 hover:-translate-y-0.5 hover:bg-[#dc8908] hover:shadow-xl"
                 >
                   Shop Now
@@ -392,6 +392,13 @@ export default function HomePage() {
                 ""
               ).toLowerCase();
 
+              const categoryImageUrl = (category as CategoryWithImage).image_url
+                ? (category as CategoryWithImage).image_url!.replace(
+                    "http://",
+                    "https://",
+                  )
+                : null;
+
               return (
                 <Link
                   key={category.id}
@@ -400,10 +407,18 @@ export default function HomePage() {
                 >
                   <div className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-[#F59E0B]/10 transition duration-300 group-hover:scale-150" />
 
-                  <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#121358]/5 text-3xl transition duration-300 group-hover:bg-[#121358] group-hover:scale-105">
-                    <span>
-                      {categoryIcons[categoryType] ?? "📦"}
-                    </span>
+                  <div className="relative mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#121358]/5 transition duration-300 group-hover:bg-white group-hover:scale-105">
+                    {categoryImageUrl ? (
+                      <img
+                        src={categoryImageUrl}
+                        alt={category.name}
+                        className="h-full w-full object-contain p-2"
+                      />
+                    ) : (
+                      <span className="text-3xl">
+                        {categoryIcons[categoryType] ?? "📦"}
+                      </span>
+                    )}
                   </div>
 
                   <span className="relative mt-4 block text-sm font-bold text-slate-800 transition group-hover:text-[#121358]">
@@ -440,11 +455,7 @@ type ServiceItemProps = {
   description: string;
 };
 
-function ServiceItem({
-  icon,
-  title,
-  description,
-}: ServiceItemProps) {
+function ServiceItem({ icon, title, description }: ServiceItemProps) {
   return (
     <div className="flex items-center gap-3 border-b border-r border-slate-200 p-4 transition hover:bg-slate-50 sm:p-5 lg:border-b-0">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F59E0B]/10 text-xl">
@@ -452,13 +463,9 @@ function ServiceItem({
       </div>
 
       <div className="min-w-0">
-        <h3 className="text-sm font-bold text-[#121358]">
-          {title}
-        </h3>
+        <h3 className="text-sm font-bold text-[#121358]">{title}</h3>
 
-        <p className="mt-0.5 text-xs text-slate-500">
-          {description}
-        </p>
+        <p className="mt-0.5 text-xs text-slate-500">{description}</p>
       </div>
     </div>
   );
