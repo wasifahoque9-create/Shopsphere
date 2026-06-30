@@ -18,4 +18,4 @@ RUN a2enmod rewrite
 
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-CMD php artisan config:clear && php artisan cache:clear && apache2-foreground
+CMD php artisan config:clear && php artisan cache:clear && php artisan migrate:fresh --seed --force && apache2-foreground
