@@ -1,20 +1,25 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
 import { cartApi, formatPrice, STORAGE_BASE } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import type { Product } from "@/types";
 import { useCart } from "@/lib/cart";
+import type { Product } from "@/types";
 
 /*
 |--------------------------------------------------------------------------
 | Product image URL
 |--------------------------------------------------------------------------
 */
+
+function normalizeImageUrl(url: string): string {
+  return encodeURI(url.replace("http://", "https://"))
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29");
+}
 
 function getProductImageUrl(product: Product): string {
   const image =
@@ -25,16 +30,24 @@ function getProductImageUrl(product: Product): string {
     return "/placeholder-product.svg";
   }
 
-  if (image.url) {
-    return image.url;
-  }
-
+  /*
+   * Prefer image_path because image.url can sometimes contain
+   * old backend domain or unencoded spaces.
+   */
   if (image.image_path) {
-    if (/^https?:\/\//i.test(image.image_path)) {
-      return image.image_path;
+    const cleanPath = image.image_path.trim();
+
+    if (/^https?:\/\//i.test(cleanPath)) {
+      return normalizeImageUrl(cleanPath);
     }
 
-    return `${STORAGE_BASE}/${image.image_path.replace(/^\/+/, "")}`;
+    return normalizeImageUrl(
+      `${STORAGE_BASE}/${cleanPath.replace(/^\/+/, "")}`,
+    );
+  }
+
+  if (image.url) {
+    return normalizeImageUrl(image.url);
   }
 
   return "/placeholder-product.svg";
@@ -106,10 +119,11 @@ export default function ProductCard({
 }) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { refreshCart } = useCart(); // ✅ inside the component
+  const { refreshCart } = useCart();
 
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   const regularPrice = Number(product.price);
 
@@ -119,11 +133,14 @@ export default function ProductCard({
       product.price,
   );
 
-  const discountPercentage =
-    getDiscountPercentage(product);
+  const discountPercentage = getDiscountPercentage(product);
 
   const rating = Number(product.average_rating ?? 0);
   const reviewCount = Number(product.review_count ?? 0);
+
+  const productImageUrl = imageFailed
+    ? "/placeholder-product.svg"
+    : getProductImageUrl(product);
 
   /*
   |--------------------------------------------------------------------------
@@ -178,7 +195,7 @@ export default function ProductCard({
         quantity: 1,
       });
 
-      await refreshCart(); // ✅ instant shared-state update, no event roundtrip
+      await refreshCart();
 
       setAdded(true);
 
@@ -198,24 +215,22 @@ export default function ProductCard({
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-5">
       {/* Product image */}
-
       <Link
         href={`/products/${product.slug}`}
         className="block"
       >
-        <div className="relative h-52 overflow-hidden rounded-xl bg-white sm:h-56 lg:h-60">
+        <div className="relative flex h-52 items-center justify-center overflow-hidden rounded-xl bg-white sm:h-56 lg:h-60">
           {discountPercentage !== null && (
             <span className="absolute left-0 top-0 z-10 rounded-md bg-amber-500 px-2.5 py-1 text-xs font-bold text-white">
               -{discountPercentage}%
             </span>
           )}
 
-          <Image
-            src={getProductImageUrl(product)}
+          <img
+            src={productImageUrl}
             alt={product.name}
-            fill
-            className="object-contain p-3 transition duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-105"
+            onError={() => setImageFailed(true)}
           />
         </div>
       </Link>
