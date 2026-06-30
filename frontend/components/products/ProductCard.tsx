@@ -1,41 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
 import { cartApi, formatPrice, STORAGE_BASE } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import type { Product } from "@/types";
-
-/*
-|--------------------------------------------------------------------------
-| Category page image mapping
-|--------------------------------------------------------------------------
-| This forces /categories/accessories to show accessory image,
-| /categories/laptops to show laptop image, etc.
-*/
-
-const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
-  accessories:
-    "products/WhatsApp Image 2026-06-29 at 12.54.01 AM.jpeg",
-
-  "desktop-pcs":
-    "products/0LBVPj94Pc2p6XCHgT2qxhSIDZtve2l8YXq4D5br.jpg",
-
-  earbuds:
-    "products/dY1zlqHKIvlFGZoydMtR7wEtVa1ZeoNNcYiYI7hW.jpg",
-
-  laptops:
-    "products/WhatsApp Image 2026-06-29 at 1.00.34 AM.jpeg",
-
-  "mobile-phones":
-    "products/images (5).jpg.jpeg",
-
-  tablets:
-    "products/OL8So2oUgZP7XQ2pGoNaZqw7Ehg2H9tfak9Qk18p.jpg",
-};
 
 /*
 |--------------------------------------------------------------------------
@@ -47,38 +19,6 @@ function normalizeImageUrl(url: string): string {
   return encodeURI(url.replace("http://", "https://"))
     .replace(/\(/g, "%28")
     .replace(/\)/g, "%29");
-}
-
-function storageUrl(path: string): string {
-  return normalizeImageUrl(
-    `${STORAGE_BASE}/${path.replace(/^\/+/, "")}`,
-  );
-}
-
-function getCategorySlugFromPath(pathname: string): string | null {
-  const match = pathname.match(/^\/categories\/([^/?#]+)/);
-
-  if (!match?.[1]) {
-    return null;
-  }
-
-  return decodeURIComponent(match[1]);
-}
-
-function getCategoryPageImageUrl(pathname: string): string | null {
-  const categorySlug = getCategorySlugFromPath(pathname);
-
-  if (!categorySlug) {
-    return null;
-  }
-
-  const imagePath = CATEGORY_IMAGE_BY_SLUG[categorySlug];
-
-  if (!imagePath) {
-    return null;
-  }
-
-  return storageUrl(imagePath);
 }
 
 function getProductImageUrl(product: Product): string {
@@ -97,7 +37,9 @@ function getProductImageUrl(product: Product): string {
       return normalizeImageUrl(cleanPath);
     }
 
-    return storageUrl(cleanPath);
+    return normalizeImageUrl(
+      `${STORAGE_BASE}/${cleanPath.replace(/^\/+/, "")}`,
+    );
   }
 
   if (image.url) {
@@ -171,7 +113,6 @@ export default function ProductCard({
 }: {
   product: Product;
 }) {
-  const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { refreshCart } = useCart();
@@ -193,16 +134,9 @@ export default function ProductCard({
   const rating = Number(product.average_rating ?? 0);
   const reviewCount = Number(product.review_count ?? 0);
 
-  /*
-   * Important:
-   * On category pages, use category image first.
-   * This fixes Accessories page showing laptop images.
-   */
-  const categoryPageImageUrl = getCategoryPageImageUrl(pathname);
-
   const productImageUrl = imageFailed
     ? "/placeholder-product.svg"
-    : categoryPageImageUrl ?? getProductImageUrl(product);
+    : getProductImageUrl(product);
 
   const selectedVariant =
     product.variants?.find(
