@@ -1,13 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
 import { cartApi, formatPrice, STORAGE_BASE } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import type { Product } from "@/types";
+
+/*
+|--------------------------------------------------------------------------
+| Category page image mapping
+|--------------------------------------------------------------------------
+| This forces /categories/accessories to show accessory image,
+| /categories/laptops to show laptop image, etc.
+*/
+
+const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
+  accessories:
+    "products/WhatsApp Image 2026-06-29 at 12.54.01 AM.jpeg",
+
+  "desktop-pcs":
+    "products/0LBVPj94Pc2p6XCHgT2qxhSIDZtve2l8YXq4D5br.jpg",
+
+  earbuds:
+    "products/dY1zlqHKIvlFGZoydMtR7wEtVa1ZeoNNcYiYI7hW.jpg",
+
+  laptops:
+    "products/WhatsApp Image 2026-06-29 at 1.00.34 AM.jpeg",
+
+  "mobile-phones":
+    "products/images (5).jpg.jpeg",
+
+  tablets:
+    "products/OL8So2oUgZP7XQ2pGoNaZqw7Ehg2H9tfak9Qk18p.jpg",
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +49,38 @@ function normalizeImageUrl(url: string): string {
     .replace(/\)/g, "%29");
 }
 
+function storageUrl(path: string): string {
+  return normalizeImageUrl(
+    `${STORAGE_BASE}/${path.replace(/^\/+/, "")}`,
+  );
+}
+
+function getCategorySlugFromPath(pathname: string): string | null {
+  const match = pathname.match(/^\/categories\/([^/?#]+)/);
+
+  if (!match?.[1]) {
+    return null;
+  }
+
+  return decodeURIComponent(match[1]);
+}
+
+function getCategoryPageImageUrl(pathname: string): string | null {
+  const categorySlug = getCategorySlugFromPath(pathname);
+
+  if (!categorySlug) {
+    return null;
+  }
+
+  const imagePath = CATEGORY_IMAGE_BY_SLUG[categorySlug];
+
+  if (!imagePath) {
+    return null;
+  }
+
+  return storageUrl(imagePath);
+}
+
 function getProductImageUrl(product: Product): string {
   const image =
     product.images?.find((item) => item.is_primary) ??
@@ -30,10 +90,6 @@ function getProductImageUrl(product: Product): string {
     return "/placeholder-product.svg";
   }
 
-  /*
-   * Prefer image_path because image.url can sometimes contain
-   * old backend domain or unencoded spaces.
-   */
   if (image.image_path) {
     const cleanPath = image.image_path.trim();
 
@@ -41,9 +97,7 @@ function getProductImageUrl(product: Product): string {
       return normalizeImageUrl(cleanPath);
     }
 
-    return normalizeImageUrl(
-      `${STORAGE_BASE}/${cleanPath.replace(/^\/+/, "")}`,
-    );
+    return storageUrl(cleanPath);
   }
 
   if (image.url) {
@@ -99,7 +153,7 @@ function RatingStars({ rating }: { rating: number }) {
               : "text-gray-300"
           }
         >
-          ★
+          ?
         </span>
       ))}
     </span>
@@ -117,6 +171,7 @@ export default function ProductCard({
 }: {
   product: Product;
 }) {
+  const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { refreshCart } = useCart();
@@ -138,15 +193,16 @@ export default function ProductCard({
   const rating = Number(product.average_rating ?? 0);
   const reviewCount = Number(product.review_count ?? 0);
 
+  /*
+   * Important:
+   * On category pages, use category image first.
+   * This fixes Accessories page showing laptop images.
+   */
+  const categoryPageImageUrl = getCategoryPageImageUrl(pathname);
+
   const productImageUrl = imageFailed
     ? "/placeholder-product.svg"
-    : getProductImageUrl(product);
-
-  /*
-  |--------------------------------------------------------------------------
-  | Select available product variant
-  |--------------------------------------------------------------------------
-  */
+    : categoryPageImageUrl ?? getProductImageUrl(product);
 
   const selectedVariant =
     product.variants?.find(
@@ -158,12 +214,6 @@ export default function ProductCard({
     : Number(product.stock_qty ?? 0);
 
   const outOfStock = availableStock <= 0;
-
-  /*
-  |--------------------------------------------------------------------------
-  | Add product to cart
-  |--------------------------------------------------------------------------
-  */
 
   async function handleAddToCart(
     event: MouseEvent<HTMLButtonElement>,
@@ -214,7 +264,6 @@ export default function ProductCard({
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-5">
-      {/* Product image */}
       <Link
         href={`/products/${product.slug}`}
         className="block"
