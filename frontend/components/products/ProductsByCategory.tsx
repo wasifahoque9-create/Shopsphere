@@ -93,10 +93,6 @@ export default function ProductsByCategory() {
             <h2 className="mt-3 text-3xl font-black text-[#121358] sm:text-4xl">
               Products By Category
             </h2>
-
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              {active.description}
-            </p>
           </div>
 
           <div className="w-full rounded-2xl border border-slate-200 bg-white p-2 shadow-sm xl:max-w-2xl">
