@@ -33,3 +33,48 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* SHOPSPHERE_MOBILE_FIXES */
+@media (max-width: 640px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  main,
+  section,
+  article,
+  form,
+  header,
+  footer,
+  div {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  img,
+  video,
+  canvas,
+  svg,
+  input,
+  select,
+  textarea,
+  button,
+  a {
+    max-width: 100%;
+  }
+
+  [class*="w-["] {
+    max-width: 100% !important;
+  }
+
+  [class*="min-w-["] {
+    min-width: 0 !important;
+  }
+
+  [class*="translate-x"] {
+    max-width: 100% !important;
+  }
+}

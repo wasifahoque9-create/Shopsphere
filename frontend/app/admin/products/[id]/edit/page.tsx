@@ -496,7 +496,7 @@ export default function EditProductPage() {
           href="/admin/products"
           className="text-sm font-semibold text-[#121358] hover:text-orange-500"
         >
-          ? Back to products
+          &larr; Back to products
         </Link>
 
         <h1 className="mt-4 text-3xl font-black text-[#121358]">
@@ -685,13 +685,25 @@ export default function EditProductPage() {
               Replace product images
             </label>
 
-            <input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              multiple
-              onChange={handleFileChange}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm"
-            />
+            <label className="flex w-full cursor-pointer flex-col gap-3 rounded-xl border border-slate-300 bg-white p-3 text-sm sm:flex-row sm:items-center">
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              <span className="inline-flex w-fit items-center justify-center rounded-lg bg-[#121358] px-5 py-3 text-sm font-black text-white transition hover:bg-[#F59E0B] hover:text-[#121358]">
+                Choose Files
+              </span>
+
+              <span className="text-sm font-semibold text-slate-500">
+                {selectedFiles.length > 0
+                  ? `${selectedFiles.length} file(s) selected`
+                  : "No file chosen"}
+              </span>
+            </label>
 
             {selectedPreviews.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-4">

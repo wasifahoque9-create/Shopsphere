@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { catalogApi } from "@/lib/api";
@@ -11,21 +12,20 @@ const tabs = [
   {
     label: "Accessories",
     value: "accessories",
-    description:
-      "Keyboard, mouse, mouse pad, Bluetooth speaker, webcam, cable, converter, memory card, pendrive, microphone.",
     categorySlugs: ["accessories"],
+    viewMoreHref: "/categories/accessories",
   },
   {
     label: "Gadgets",
     value: "gadgets",
-    description: "Earbuds, earphones, headphones and audio gadgets.",
     categorySlugs: ["earbuds"],
+    viewMoreHref: "/categories/earbuds",
   },
   {
     label: "Smart Devices",
     value: "smart-devices",
-    description: "Laptops, mobile phones, desktop PCs and tablets.",
     categorySlugs: ["laptops", "mobile-phones", "desktop-pcs", "tablets"],
+    viewMoreHref: "/products",
   },
 ];
 
@@ -79,18 +79,18 @@ export default function ProductsByCategory() {
     return () => {
       isMounted = false;
     };
-  }, [activeTab, active.categorySlugs]);
+  }, [activeTab, active]);
 
   return (
-    <section className="overflow-hidden bg-[#EEF2FF] px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <section className="w-full overflow-hidden bg-[#EEF2FF] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <div className="mx-auto max-w-7xl overflow-hidden">
         <div className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
-            <p className="text-sm font-black uppercase tracking-[0.35em] text-blue-600">
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600 sm:text-sm sm:tracking-[0.35em]">
               Explore Our Technology
             </p>
 
-            <h2 className="mt-3 text-3xl font-black text-[#121358] sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-black leading-tight text-[#121358] sm:text-4xl">
               Products By Category
             </h2>
           </div>
@@ -126,11 +126,22 @@ export default function ProductsByCategory() {
             Loading products...
           </div>
         ) : products.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-center">
+              <Link
+                href={active.viewMoreHref}
+                className="rounded-2xl bg-[#121358] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:bg-[#F59E0B] hover:text-[#121358]"
+              >
+                View More Products
+              </Link>
+            </div>
+          </>
         ) : (
           <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
             <p className="text-lg font-black text-[#121358]">
