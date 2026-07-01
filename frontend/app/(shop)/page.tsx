@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+
+import {
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  Headphones,
+} from "lucide-react";
 
 import ProductsByCategory from "@/components/products/ProductsByCategory";
 import { PageLoader } from "@/components/ui/Spinner";
