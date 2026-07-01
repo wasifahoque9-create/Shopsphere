@@ -558,7 +558,7 @@ public function store(
             'message' =>
                 'Product could not be created.',
 
-            'error' => app()->isLocal()
+            'error' => config('app.debug')
                 ? $exception->getMessage()
                 : null,
         ], 500);
