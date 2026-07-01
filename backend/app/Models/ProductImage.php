@@ -35,10 +35,12 @@ class ProductImage extends Model
             return '';
         }
 
-        if (preg_match('/^https?:\/\//i', $this->image_path)) {
-            return $this->image_path;
+        $imagePath = trim($this->image_path);
+
+        if (preg_match('/^https?:\/\//i', $imagePath)) {
+            return $imagePath;
         }
 
-        return rtrim(config('app.url'), '/') . '/storage/' . ltrim($this->image_path, '/');
+        return rtrim(config('app.url'), '/') . '/storage/' . ltrim($imagePath, '/');
     }
 }
