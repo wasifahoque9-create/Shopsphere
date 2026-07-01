@@ -6,74 +6,71 @@ import { useEffect, useState } from "react";
 import { catalogApi, formatPrice, getProductImage } from "@/lib/api";
 import type { Product } from "@/types";
 
-const categoryTabs = [
+const tabs = [
   {
     label: "Accessories",
-    slug: "accessories",
+    value: "accessories",
     description:
       "Keyboard, mouse, mouse pad, Bluetooth speaker, webcam, cable, converter, memory card, pendrive, microphone.",
+    categorySlugs: ["accessories"],
   },
   {
-    label: "Earbuds",
-    slug: "earbuds",
-    description: "All types of earbuds and wireless audio products.",
+    label: "Gadgets",
+    value: "gadgets",
+    description:
+      "Earbuds, earphones, headphones and audio gadgets.",
+    categorySlugs: ["earbuds"],
   },
   {
-    label: "Laptops",
-    slug: "laptops",
-    description: "All kinds of laptop products.",
-  },
-  {
-    label: "Mobile Phones",
-    slug: "mobile-phones",
-    description: "All kinds of mobile phones.",
-  },
-  {
-    label: "Desktop PCs",
-    slug: "desktop-pcs",
-    description: "Desktop PCs and related desktop products.",
-  },
-  {
-    label: "Tablets",
-    slug: "tablets",
-    description: "All kinds of tablet products.",
+    label: "Smart Devices",
+    value: "smart-devices",
+    description:
+      "Laptops, mobile phones, desktop PCs and tablets.",
+    categorySlugs: ["laptops", "mobile-phones", "desktop-pcs", "tablets"],
   },
 ];
 
 export default function ProductsByCategory() {
-  const [activeSlug, setActiveSlug] = useState(categoryTabs[0].slug);
+  const [activeTab, setActiveTab] = useState(tabs[0].value);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const activeCategory =
-    categoryTabs.find((category) => category.slug === activeSlug) ??
-    categoryTabs[0];
+  const active =
+    tabs.find((item) => item.value === activeTab) ?? tabs[0];
 
   useEffect(() => {
-    let active = true;
+    let isActive = true;
 
     async function loadProducts() {
       try {
         setLoading(true);
         setError("");
 
-        const response = await catalogApi.getCategoryProducts(activeSlug, {
-          per_page: 6,
-        });
+        const responses = await Promise.all(
+          active.categorySlugs.map((slug) =>
+            catalogApi.getCategoryProducts(slug, {
+              per_page: 6,
+            }),
+          ),
+        );
 
-        if (active) {
-          setProducts(response.data ?? []);
+        const mergedProducts = responses
+          .flatMap((response) => response.data ?? [])
+          .slice(0, 6);
+
+        if (isActive) {
+          setProducts(mergedProducts);
         }
       } catch (error) {
-        console.error("Unable to load category products:", error);
+        console.error("Unable to load products by category:", error);
 
-        if (active) {
-          setError("Products could not be loaded.");
+        if (isActive) {
           setProducts([]);
+          setError("Products could not be loaded.");
         }
       } finally {
-        if (active) {
+        if (isActive) {
           setLoading(false);
         }
       }
@@ -82,9 +79,9 @@ export default function ProductsByCategory() {
     loadProducts();
 
     return () => {
-      active = false;
+      isActive = false;
     };
-  }, [activeSlug]);
+  }, [activeTab, active.categorySlugs]);
 
   return (
     <section className="bg-[#EEF2FF] px-4 py-16 sm:px-6 lg:px-8">
@@ -100,23 +97,23 @@ export default function ProductsByCategory() {
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-              {activeCategory.description}
+              {active.description}
             </p>
           </div>
 
-          <div className="flex max-w-full gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-            {categoryTabs.map((category) => (
+          <div className="flex gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+            {tabs.map((tab) => (
               <button
-                key={category.slug}
+                key={tab.value}
                 type="button"
-                onClick={() => setActiveSlug(category.slug)}
-                className={`whitespace-nowrap rounded-xl px-5 py-3 text-sm font-black transition ${
-                  activeSlug === category.slug
+                onClick={() => setActiveTab(tab.value)}
+                className={`whitespace-nowrap rounded-xl px-6 py-3 text-sm font-black transition ${
+                  activeTab === tab.value
                     ? "bg-[#121358] text-white shadow-md"
                     : "text-slate-500 hover:bg-slate-100 hover:text-[#121358]"
                 }`}
               >
-                {category.label}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -136,7 +133,9 @@ export default function ProductsByCategory() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => {
               const imageUrl = getProductImage(product);
-              const price = formatPrice(Number(product.effective_price ?? product.price));
+              const price = formatPrice(
+                Number(product.effective_price ?? product.price),
+              );
 
               return (
                 <article
