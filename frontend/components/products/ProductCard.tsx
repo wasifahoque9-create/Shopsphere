@@ -83,7 +83,7 @@ function RatingStars({ rating }: { rating: number }) {
 
   return (
     <span
-      className="flex items-center gap-0.5"
+      className="flex cursor-pointer items-center gap-0.5"
       aria-label={`${rating} out of 5 stars`}
     >
       {Array.from({ length: 5 }, (_, index) => (
@@ -234,13 +234,17 @@ export default function ProductCard({
           </h3>
         </Link>
 
-        <div className="mt-3 flex items-center gap-2 text-sm">
+        <Link
+          href={`/products/${product.id}#reviews`}
+          className="mt-3 inline-flex items-center gap-2 text-sm transition hover:opacity-80"
+          aria-label={`View reviews for ${product.name}`}
+        >
           <RatingStars rating={rating} />
 
           <span className="text-gray-400">
             ({reviewCount})
           </span>
-        </div>
+        </Link>
 
         <div className="mt-4 flex min-h-8 items-center gap-2">
           {discountPercentage !== null && (
